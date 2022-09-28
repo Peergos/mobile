@@ -39,9 +39,19 @@
             <version>${javafx.version}</version>
         </dependency>
         <dependency>
+        <groupId>org.openjfx</groupId>
+        <artifactId>javafx-web</artifactId>
+        <version>${javafx.version}</version>
+        </dependency>
+        <dependency>
             <groupId>com.gluonhq</groupId>
             <artifactId>charm-glisten</artifactId>
             <version>${charm.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.gluonhq.attach</groupId>
+            <artifactId>browser</artifactId>
+            <version>${attach.version}</version>
         </dependency>
         <dependency>
             <groupId>com.gluonhq.attach</groupId>
@@ -93,6 +103,7 @@
                     <target>${gluonfx.target}</target>
                     <mainClass>${main.class}</mainClass>
                     <attachList>
+                        <list>browser</list>
                         <list>display</list>
                         <list>lifecycle</list>
                         <list>statusbar</list>
