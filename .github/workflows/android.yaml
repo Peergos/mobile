@@ -24,12 +24,12 @@ jobs:
           sudo apt install libasound2-dev libavcodec-dev libavformat-dev libavutil-dev libgl-dev libgtk-3-dev libpango1.0-dev libxtst-dev
 
       # Setup the Android keystore, based on a repo secret. See the section 'Setup Android Keystore' below.
-      - name: Setup Android Keystore
-        id: android_keystore_file
-        uses: timheuer/base64-to-file@v1
-        with:
-          fileName: 'my.keystore'
-          encodedString: ${{ secrets.GLUON_ANDROID_KEYSTORE_BASE64 }}
+      #- name: Setup Android Keystore
+      #  id: android_keystore_file
+      #  uses: timheuer/base64-to-file@v1
+      #  with:
+      #    fileName: 'my.keystore'
+      #    encodedString: ${{ secrets.GLUON_ANDROID_KEYSTORE_BASE64 }}
 
       # Install the Gluon License (optional)
       # Using this step requires you to set a GLUON_LICENSE secret in the secret configuration of your repo. Have a look at https://gluonhq.com/products/mobile/buy for more information about obtaining a license.
@@ -43,11 +43,11 @@ jobs:
       # This step also uses some env variables taken from the repo secrets. See the section 'Setup Android Keystore' below.
       - name: Gluon Build
         run: mvn -Pandroid gluonfx:build gluonfx:package
-        env:
-          GLUON_ANDROID_KEYSTOREPATH: ${{ steps.android_keystore_file.outputs.filePath }}
-          GLUON_ANDROID_KEYSTORE_PASSWORD: ${{ secrets.GLUON_ANDROID_KEYSTORE_PASSWORD }}
-          GLUON_ANDROID_KEYALIAS: ${{ secrets.GLUON_ANDROID_KEYALIAS }}
-          GLUON_ANDROID_KEYALIAS_PASSWORD: ${{ secrets.GLUON_ANDROID_KEYALIAS_PASSWORD }}
+      #  env:
+      #    GLUON_ANDROID_KEYSTOREPATH: ${{ steps.android_keystore_file.outputs.filePath }}
+      #    GLUON_ANDROID_KEYSTORE_PASSWORD: ${{ secrets.GLUON_ANDROID_KEYSTORE_PASSWORD }}
+      #    GLUON_ANDROID_KEYALIAS: ${{ secrets.GLUON_ANDROID_KEYALIAS }}
+      #    GLUON_ANDROID_KEYALIAS_PASSWORD: ${{ secrets.GLUON_ANDROID_KEYALIAS_PASSWORD }}
 
       # Create staging directory in which the apk will be copied
       - name: Make staging directory
