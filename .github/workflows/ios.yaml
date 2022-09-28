@@ -1,0 +1,53 @@
+name: iOS
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      # Checkout your code
+      - uses: actions/checkout@v2
+
+      # Make sure the latest GraalVM is installed.
+      # after this step env.JAVA_HOME and env.GRAALVM_HOME will point to the GraalVM location
+      - name: Setup GraalVM built by Gluon
+        uses: gluonhq/setup-graalvm@master
+        # set GITHUB_TOKEN to avoid exceeding GitHub's API rate limit
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # Setup the signing identify. See the section 'Configuring the signing identity'
+      - uses: Apple-Actions/import-codesign-certs@v1
+        with:
+          p12-file-base64: ${{ secrets.GLUON_IOS_CERTIFICATES_FILE_BASE64 }}
+          p12-password: ${{ secrets.GLUON_IOS_CERTIFICATES_PASSWORD }}
+
+      # Download the appropriate provisioning profile using Apple's Appstore Connect API.  See the section 'Using the Appstore Connect API' below
+      - uses: Apple-Actions/download-provisioning-profiles@v1
+        with:
+          bundle-id: com.gluonhq.hello.HelloGluonApp
+          issuer-id: ${{ secrets.GLUON_IOS_APPSTORE_ISSUER_ID }}
+          api-key-id: ${{ secrets.GLUON_IOS_APPSTORE_KEY_ID }}
+          api-private-key: ${{ secrets.GLUON_IOS_APPSTORE_PRIVATE_KEY }}
+
+      # Install the Gluon License (optional)
+      # Using this step requires you to set a GLUON_LICENSE secret in the secret configuration of your repo. Have a look at https://gluonhq.com/products/mobile/buy for more information about obtaining a license.
+      #- name: Gluon License
+      #  uses: gluonhq/gluon-build-license@v1
+      #  with:
+      #    gluon-license: ${{ secrets.GLUON_LICENSE }}
+
+      # Build your project using Maven
+      # The ios profile is used, which means a native build will be created for the gluonfx target ios.
+      - name: Gluon Build
+        run: mvn -Pios gluonfx:build gluonfx:package
+
+      # Upload the build .ipa file to TestFlight using the Appstore Connect API.
+      - uses: Apple-Actions/upload-testflight-build@master
+        with:
+          app-path: target/gluonfx/arm64-ios/HelloGluon.ipa
+          issuer-id: ${{ secrets.GLUON_IOS_APPSTORE_ISSUER_ID }}
+          api-key-id: ${{ secrets.GLUON_IOS_APPSTORE_KEY_ID }}
+          api-private-key: ${{ secrets.GLUON_IOS_APPSTORE_PRIVATE_KEY }}
+
