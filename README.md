@@ -17,7 +17,7 @@ A list of the basic requirements can be found online in the [Gluon documentation
 
 ### Run the sample as a native android image:
 
-    export GRAALVM_HOME=./graalvm-svm-java17-linux-gluon-22.1.0.1-Final
+    export GRAALVM_HOME=$PWD/graalvm-svm-java17-linux-gluon-22.1.0.1-Final
     mvn -Pandroid gluonfx:build gluonfx:package gluonfx:install gluonfx:nativerun
 
 ### Run the sample as a native iOS image:
