@@ -31,6 +31,7 @@ This is a list of all the features that were selected when creating the sample:
 ### JavaFX 18.0.2 Modules
 
  - javafx-base
+ - javafx-web
  - javafx-graphics
  - javafx-controls
 
