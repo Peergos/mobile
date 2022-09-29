@@ -3,7 +3,7 @@
     <supports-screens android:xlargeScreens="true"/>
     <uses-permission android:name="android.permission.INTERNET"/>
     
-    <application android:label='Peergos' android:icon="@mipmap/ic_launcher">
+    <application android:label='Peergos' android:icon="@mipmap/ic_launcher" android:usesCleartextTraffic="true">
         <activity android:name='com.gluonhq.helloandroid.MainActivity' android:configChanges="orientation|keyboardHidden">
              <intent-filter>
                 <category android:name='android.intent.category.LAUNCHER'/>

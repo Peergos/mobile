@@ -20,9 +20,17 @@
         <charm.version>6.1.1</charm.version>
         <attach.version>4.0.15</attach.version>
         <main.class>org.peergos.sample.Main</main.class>
+        <server.path>${basedir}/lib/Peergos.jar</server.path>
     </properties>
 
     <dependencies>
+        <dependency>
+          <groupId>org.peergos</groupId>
+          <artifactId>peergos-server</artifactId>
+          <version>0.11.0</version>
+          <scope>system</scope>
+          <systemPath>${server.path}</systemPath>
+        </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-base</artifactId>
@@ -109,6 +117,9 @@
                         <list>statusbar</list>
                         <list>storage</list>
                     </attachList>
+                    <nativeImageArgs>
+                      <arg>-H:IncludeResources='./webroot/.*'</arg>
+                    </nativeImageArgs>
                 </configuration>
             </plugin>
         </plugins>
