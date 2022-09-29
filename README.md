@@ -3,7 +3,7 @@
 
 ## Basic Requirements
 
-A list of the basic requirements can be found online in the [Gluon documentation](https://docs.gluonhq.com/#_requirements).
+A list of the basic requirements can be found online in the [Gluon documentation](https://docs.gluonhq.com/#_requirements). Install the Gluon GraalVM build:  https://github.com/gluonhq/graal/releases/tag/gluon-22.1.0.1-Final
 
 ## Quick instructions
 
@@ -15,13 +15,14 @@ A list of the basic requirements can be found online in the [Gluon documentation
 
     mvn gluonfx:build gluonfx:nativerun
 
-### Run the sample as a native android image:
+### Run the sample as a native android image (remove last two args to just build):
 
     export GRAALVM_HOME=$PWD/graalvm-svm-java17-linux-gluon-22.1.0.1-Final
     mvn -Pandroid gluonfx:build gluonfx:package gluonfx:install gluonfx:nativerun
 
-### Run the sample as a native iOS image:
+### Run the sample as a native iOS image (remove last two args to just build):
 
+    export GRAALVM_HOME=$PWD/graalvm-svm-java17-linux-gluon-22.1.0.1-Final/Contents/Home
     mvn -Pios gluonfx:build gluonfx:package gluonfx:install gluonfx:nativerun
 
 ## Selected features
