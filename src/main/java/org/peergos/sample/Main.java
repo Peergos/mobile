@@ -11,16 +11,15 @@ import javafx.application.Application;
 import javafx.geometry.*;
 import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
+import netscape.javascript.*;
 import peergos.server.*;
-import peergos.server.messages.*;
-import peergos.server.storage.*;
+import peergos.server.util.*;
 import peergos.shared.*;
 import peergos.shared.io.ipfs.cid.*;
 
 import java.io.*;
 import java.net.*;
 import java.util.*;
-import java.util.concurrent.*;
 
 public class Main extends Application {
 
@@ -71,18 +70,37 @@ public class Main extends Application {
         launch(args);
     }
 
+    public static class JavaBridge {
+        public void log(String text) {
+            Logging.LOG().info(text);
+        }
+    }
+
     static class Browser extends Region {
 
         final WebView browser = new WebView();
         final WebEngine webEngine = browser.getEngine();
+        private final JavaBridge bridge = new JavaBridge();
 
         public Browser() {
             //apply the styles
             getStyleClass().add("Peergos");
+
+            webEngine.getLoadWorker().stateProperty().addListener((observable, oldValue, newValue) ->
+            {
+                JSObject window = (JSObject) webEngine.executeScript("window");
+                window.setMember("java", bridge);
+                webEngine.executeScript("console.log = function(message)\n" +
+                        "{\n" +
+                        "    java.log(message);\n" +
+                        "};");
+            });
+
             // load the web page
             webEngine.load("http://localhost:8000/");
             //add the web view to the scene
             getChildren().add(browser);
+            webEngine.executeScript("console.log('DEBUG window.crypto.subtle = ' + window.crypto.subtle)");
         }
 
         public void goBack() {
