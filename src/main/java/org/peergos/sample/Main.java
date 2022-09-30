@@ -32,7 +32,7 @@ public class Main extends Application {
 
         // create the scene
         stage.setTitle("Peergos");
-        view = new Browser();
+        view = new Browser("http://localhost:8000/");
         scene = new Scene(view, 900, 700, Color.web("#666970"));
         scene.addEventHandler(KeyEvent.KEY_RELEASED, e -> {
             if (KeyCode.ESCAPE.equals(e.getCode())) {
@@ -76,13 +76,43 @@ public class Main extends Application {
         }
     }
 
+    public static class Hash {
+        public byte[] sha256(byte[] in) {
+            return peergos.shared.crypto.hash.Hash.sha256(in);
+        }
+    }
+
+    private static void ensureWebCrypto(WebEngine webEngine, Hash h) {
+        JSObject window = (JSObject) webEngine.executeScript("window");
+        window.setMember("hash", h);
+        webEngine.executeScript("if (window.crypto.subtle == null){\n" +
+                "   console.log(\"Installing window.crypto.subtle\");\n" +
+                "   window.crypto.subtle={};\n" +
+                "   window.crypto.subtle.digest=function(props, data){\n" +
+                "console.log(\"HEYYYYYYY\");\n" +
+                "      if (props.name == \"SHA-256\") {\n" +
+                "         var res = hash.sha256(data);\n" +
+                "         return new Promise(function(resolve, reject){resolve(res);});\n" +
+                "      }\n" +
+                "      throw \"Unknown digest algorithm: \" + props.name;\n" +
+                "   }\n" +
+                "   window.crypto.subtle.importKey=function(type, key, props, bool, ops){\n" +
+                "         return new Promise(function(resolve, reject){resolve(key);});\n" +
+                "   }\n" +
+                "   window.crypto.subtle.sign=function(alg, key, message){\n" +
+                "         return new Promise(function(resolve, reject){resolve(key);});\n" +
+                "   }\n" +
+                "}");
+    }
+
     static class Browser extends Region {
 
         final WebView browser = new WebView();
         final WebEngine webEngine = browser.getEngine();
         private final JavaBridge bridge = new JavaBridge();
+        private final Hash hash = new Hash();
 
-        public Browser() {
+        public Browser(String url) {
             //apply the styles
             getStyleClass().add("Peergos");
 
@@ -90,17 +120,16 @@ public class Main extends Application {
             {
                 JSObject window = (JSObject) webEngine.executeScript("window");
                 window.setMember("java", bridge);
-                webEngine.executeScript("console.log = function(message)\n" +
-                        "{\n" +
+                webEngine.executeScript("console.log = function(message) {\n" +
                         "    java.log(message);\n" +
                         "};");
             });
 
-            // load the web page
-            webEngine.load("http://localhost:8000/");
             //add the web view to the scene
             getChildren().add(browser);
+            ensureWebCrypto(webEngine, hash);
             webEngine.executeScript("console.log('DEBUG window.crypto.subtle = ' + window.crypto.subtle)");
+            webEngine.load(url);
         }
 
         public void goBack() {
