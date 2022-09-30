@@ -118,7 +118,7 @@
                         <list>storage</list>
                     </attachList>
                     <nativeImageArgs>
-                      <arg>-H:IncludeResources='./webroot/.*'</arg>
+                      <arg>-H:IncludeResources='webroot/.*'</arg>
                     </nativeImageArgs>
                 </configuration>
             </plugin>

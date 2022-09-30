@@ -50,9 +50,8 @@ public class Main extends Application {
         try {
             Crypto crypto = Builder.initCrypto();
             NetworkAccess net = Builder.buildJavaNetworkAccess(new URI("https://peergos.net").toURL(), true).join();
-            ServerMessageStore serverMessages = null; // TODO
-            UserService server = new UserService(net.dhtClient, net.batCave, crypto, net.coreNode, net.account,
-                    net.social, net.mutable, net.instanceAdmin, net.spaceUsage, serverMessages, null);
+            UserService server = new UserService(new DirectOnlyStorage(net.dhtClient), net.batCave, crypto, net.coreNode, net.account,
+                    net.social, net.mutable, net.instanceAdmin, net.spaceUsage, net.serverMessager, null);
 
             InetSocketAddress localAPIAddress = new InetSocketAddress("localhost", 8000);
             List<String> appSubdomains = Arrays.asList("markdown-viewer,email,calendar,todo-board,code-editor,pdf".split(","));
