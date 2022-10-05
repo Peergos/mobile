@@ -19,7 +19,7 @@ A list of the basic requirements can be found online in the [Gluon documentation
 ### Run the sample as a native android image (linux only, remove last two args to just build):
 
     export GRAALVM_HOME=$PWD/graalvm-svm-java17-linux-gluon-22.1.0.1-Final
-    mvn -Pandroid gluonfx:build gluonfx:package gluonfx:install gluonfx:nativerun
+    java BuildAndroid.java
 
 ### Run the sample as a native iOS image (macOS only, remove last two args to just build):
 
