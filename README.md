@@ -12,15 +12,16 @@ A list of the basic requirements can be found online in the [Gluon documentation
     mvn gluonfx:run
 
 ### Run the sample as a native image:
+    apt install libasound2-dev libavcodec-dev libavformat-dev libavutil-dev libfreetype6-dev libgl-dev libglib2.0-dev libgtk-3-dev libpango1.0-dev libxtst-dev
 
     mvn gluonfx:build gluonfx:nativerun
 
-### Run the sample as a native android image (remove last two args to just build):
+### Run the sample as a native android image (linux only, remove last two args to just build):
 
     export GRAALVM_HOME=$PWD/graalvm-svm-java17-linux-gluon-22.1.0.1-Final
     mvn -Pandroid gluonfx:build gluonfx:package gluonfx:install gluonfx:nativerun
 
-### Run the sample as a native iOS image (remove last two args to just build):
+### Run the sample as a native iOS image (macOS only, remove last two args to just build):
 
     export GRAALVM_HOME=$PWD/graalvm-svm-java17-linux-gluon-22.1.0.1-Final/Contents/Home
     mvn -Pios gluonfx:build gluonfx:package gluonfx:install gluonfx:nativerun
