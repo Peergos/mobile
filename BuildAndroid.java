@@ -8,7 +8,9 @@ public class BuildAndroid {
     public static void main(String[] a) throws Exception {
 
         // extract web assets
-        runCommand("unzip -o lib/Peergos.jar webroot/* -d .");
+        String baseDir = "src/main/resources";
+        new File(baseDir).mkdirs();
+        runCommand("unzip -o lib/Peergos.jar webroot/* -d " + baseDir);
 
         // run native-image
         runCommand("mvn " +

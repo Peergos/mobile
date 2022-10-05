@@ -117,8 +117,23 @@
                         <list>statusbar</list>
                         <list>storage</list>
                     </attachList>
+                    <resourcesList>
+                      <list>.*\\.bcmap$</list>
+                      <list>.*\\.css$</list>
+                      <list>.*\\.cur$</list>
+                      <list>.*\\.eot$</list>
+                      <list>.*\\.gif$</list>
+                      <list>.*\\.html$</list>
+                      <list>.*\\.ico$</list>
+                      <list>.*\\.map$</list>
+                      <list>.*\\.properties$</list>
+                      <list>.*\\.svg$</list>
+                      <list>.*\\.ttf$</list>
+                      <list>.*\\.woff$</list>
+                      <list>.*\\.woff2$</list>
+                    </resourcesList>
                     <nativeImageArgs>
-                      <arg>-H:IncludeResources='webroot/.*'</arg>
+                      <arg>-H:IncludeResources='.*/webroot/.*$'</arg>
                     </nativeImageArgs>
                 </configuration>
             </plugin>
