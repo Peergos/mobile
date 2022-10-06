@@ -1,5 +1,6 @@
 package org.peergos.sample;
 
+import com.gluonhq.attach.storage.*;
 import javafx.application.*;
 import javafx.collections.*;
 import javafx.scene.Scene;
@@ -13,12 +14,15 @@ import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
 import netscape.javascript.*;
 import peergos.server.*;
+import peergos.server.storage.*;
 import peergos.server.util.*;
 import peergos.shared.*;
 import peergos.shared.io.ipfs.cid.*;
+import peergos.shared.storage.*;
 
 import java.io.*;
 import java.net.*;
+import java.nio.file.*;
 import java.util.*;
 
 public class Main extends Application {
@@ -49,7 +53,13 @@ public class Main extends Application {
         try {
             Crypto crypto = Builder.initCrypto();
             NetworkAccess net = Builder.buildJavaNetworkAccess(new URI("https://peergos.net").toURL(), true).join();
-            UserService server = new UserService(new DirectOnlyStorage(net.dhtClient), net.batCave, crypto, net.coreNode, net.account,
+            File privateStorage = StorageService.create()
+                    .flatMap(StorageService::getPrivateStorage)
+                    .orElseThrow(() -> new FileNotFoundException("Could not access private app storage."));
+            FileBlockCache blockCache = new FileBlockCache(Paths.get(privateStorage.getAbsolutePath())
+                    .resolve(Paths.get("blocks", "cache")));
+            ContentAddressedStorage target = /*net.dhtClient;*/new UnauthedCachingStorage(net.dhtClient, blockCache);
+            UserService server = new UserService(new DirectOnlyStorage(target), net.batCave, crypto, net.coreNode, net.account,
                     net.social, net.mutable, net.instanceAdmin, net.spaceUsage, net.serverMessager, null);
 
             InetSocketAddress localAPIAddress = new InetSocketAddress("localhost", 8000);
@@ -89,6 +99,8 @@ public class Main extends Application {
             webEngine.getLoadWorker().stateProperty().addListener((observable, oldValue, newValue) ->
             {
                 JSObject window = (JSObject) webEngine.executeScript("window");
+                if (window == null)
+                    return;
                 window.setMember("java", bridge);
                 webEngine.executeScript("console.log = function(message) {\n" +
                         "    java.log(message);\n" +
