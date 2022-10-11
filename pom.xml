@@ -131,9 +131,23 @@
                       <list>.*\\.ttf$</list>
                       <list>.*\\.woff$</list>
                       <list>.*\\.woff2$</list>
+                      <list>.*\\.so$</list>
                     </resourcesList>
+                    <jniList>
+                      <list>org.sqlite.core.DB</list>
+                      <list>org.sqlite.core.NativeDB</list>
+                      <list>org.sqlite.BusyHandler</list>
+                      <list>org.sqlite.Function</list>
+                      <list>org.sqlite.ProgressHandler</list>
+                      <list>org.sqlite.Function$Aggregate</list>
+                      <list>org.sqlite.Function$Window</list>
+                      <list>org.sqlite.core.DB$ProgressObserver</list>
+                      <list>java.lang.Throwable</list>
+                    </jniList>
                     <nativeImageArgs>
+                      <arg>-H:Log=registerResource:3</arg>
                       <arg>-H:IncludeResources='.*/webroot/.*$'</arg>
+                      <arg>-H:IncludeResources='.*org/sqlite/native/${sqlite.platform}/aarch64/libsqlitejdbc.so$'</arg>
                     </nativeImageArgs>
                 </configuration>
             </plugin>
@@ -144,7 +158,8 @@
         <profile>
             <id>android</id>
             <properties>
-                <gluonfx.target>android</gluonfx.target>
+              <gluonfx.target>android</gluonfx.target>
+              <sqlite.platform>Linux-Android</sqlite.platform>
             </properties>
         </profile>
         <profile>

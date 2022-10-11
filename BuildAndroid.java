@@ -11,6 +11,7 @@ public class BuildAndroid {
         String baseDir = "src/main/resources";
         new File(baseDir).mkdirs();
         runCommand("unzip -o lib/Peergos.jar webroot/* -d " + baseDir);
+        runCommand("unzip -o lib/Peergos.jar org/sqlite/native/Linux-Android/aarch64/libsqlitejdbc.so -d " + baseDir);
 
         // run native-image
         runCommand("mvn " +

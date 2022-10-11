@@ -14,16 +14,28 @@ import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
 import netscape.javascript.*;
 import peergos.server.*;
+import peergos.server.corenode.*;
+import peergos.server.crypto.hash.*;
+import peergos.server.login.*;
+import peergos.server.mutable.*;
+import peergos.server.sql.*;
 import peergos.server.storage.*;
+import peergos.server.storage.auth.*;
 import peergos.server.util.*;
 import peergos.shared.*;
+import peergos.shared.corenode.*;
+import peergos.shared.crypto.hash.*;
 import peergos.shared.io.ipfs.cid.*;
+import peergos.shared.io.ipfs.multihash.*;
+import peergos.shared.mutable.*;
 import peergos.shared.storage.*;
 
 import java.io.*;
 import java.net.*;
 import java.nio.file.*;
+import java.sql.*;
 import java.util.*;
+import java.util.function.*;
 
 public class Main extends Application {
 
@@ -49,18 +61,64 @@ public class Main extends Application {
         stage.show();
     }
 
-    public void startServer() {
+    public static NetworkAccess buildNetwork(String url, Hasher h) throws URISyntaxException, MalformedURLException {
+        URL target = new URI(url).toURL();
+        try {
+            return Builder.buildJavaNetworkAccess(target, true).join();
+        } catch (Exception e) {
+            System.out.println("Using offline NetworkAccess");
+            JavaPoster poster = new JavaPoster(target, true, Optional.empty());
+            CoreNode directCore = NetworkAccess.buildDirectCorenode(poster);
+            ContentAddressedStorage localDht = NetworkAccess.buildLocalDht(poster, true, h);
+            Cid peergosdotnet = Cid.decode("QmcoDbhCiVXGrWs6rwBvB59Gm44veo7Qxn2zmRnPw7BaCH");
+            return NetworkAccess.buildToPeergosServer(peergosdotnet, directCore, localDht, poster, poster, 7000, h, Collections.emptyList(), false);
+        }
+    }
+
+    public static void startServer() {
         try {
             Crypto crypto = Builder.initCrypto();
-            NetworkAccess net = Builder.buildJavaNetworkAccess(new URI("https://peergos.net").toURL(), true).join();
+            NetworkAccess net = buildNetwork("https://peergos.net", crypto.hasher);
+
+            System.out.println("SQLITE library present: " + (null != peergos.server.Main.class.getResourceAsStream("/org/sqlite/native/Linux-Android/aarch64/libsqlitejdbc.so")));
             File privateStorage = StorageService.create()
                     .flatMap(StorageService::getPrivateStorage)
                     .orElseThrow(() -> new FileNotFoundException("Could not access private app storage."));
-            FileBlockCache blockCache = new FileBlockCache(Paths.get(privateStorage.getAbsolutePath())
-                    .resolve(Paths.get("blocks", "cache")));
-            ContentAddressedStorage target = /*net.dhtClient;*/new UnauthedCachingStorage(net.dhtClient, blockCache);
-            UserService server = new UserService(new DirectOnlyStorage(target), net.batCave, crypto, net.coreNode, net.account,
-                    net.social, net.mutable, net.instanceAdmin, net.spaceUsage, net.serverMessager, null);
+            Path peergosDir = Paths.get(privateStorage.getAbsolutePath());
+            System.out.println("Peergos using private storage dir: " + peergosDir);
+            if (com.gluonhq.attach.util.Platform.isAndroid()) {
+                // make sure sqlite loads correct shared library on Android
+                System.out.println("Initial runtime name: " + System.getProperty("java.runtime.name", ""));
+                System.setProperty("java.runtime.name", "android");
+                System.out.println("Updated runtime name: " + System.getProperty("java.runtime.name", ""));
+            }
+
+            Args a = Args.parse(new String[]{
+                    "PEERGOS_PATH", peergosDir.toString(),
+                    "-mutable-pointers-cache", "pointer-cache.sql",
+                    "-account-cache-sql-file", "account-cache.sql",
+                    "-pki-cache-sql-file", "pki-cache.sql",
+                    "-bat-cache-sql-file", "bat-cache.sql"
+            });
+            FileBlockCache blockCache = new FileBlockCache(peergosDir.resolve(Paths.get("blocks", "cache")),
+                    10*1024*1024*1024L);
+            ContentAddressedStorage locallyCachedStorage = new UnauthedCachingStorage(net.dhtClient, blockCache);
+            DirectOnlyStorage withoutS3 = new DirectOnlyStorage(locallyCachedStorage);
+
+            Supplier<Connection> dbConnector = Builder.getDBConnector(a, "mutable-pointers-cache");
+            JdbcIpnsAndSocial rawPointers = Builder.buildRawPointers(a, dbConnector);
+            OfflinePointerCache pointerCache = new OfflinePointerCache(net.mutable, new JdbcPointerCache(rawPointers, locallyCachedStorage));
+
+            SqlSupplier commands = Builder.getSqlCommands(a);
+            OfflineCorenode offlineCorenode = new OfflineCorenode(net.coreNode, new JdbcPkiCache(Builder.getDBConnector(a, "pki-cache-sql-file", dbConnector), commands));
+
+            JdbcAccount localAccount = new JdbcAccount(Builder.getDBConnector(a, "account-cache-sql-file", dbConnector), commands);
+            OfflineAccountStore offlineAccounts = new OfflineAccountStore(net.account, localAccount);
+
+            OfflineBatCache offlineBats = new OfflineBatCache(net.batCave, new JdbcBatCave(Builder.getDBConnector(a, "bat-cache-sql-file", dbConnector), commands));
+
+            UserService server = new UserService(withoutS3, offlineBats, crypto, offlineCorenode, offlineAccounts,
+                    net.social, pointerCache, net.instanceAdmin, net.spaceUsage, net.serverMessager, null);
 
             InetSocketAddress localAPIAddress = new InetSocketAddress("localhost", 8000);
             List<String> appSubdomains = Arrays.asList("markdown-viewer,email,calendar,todo-board,code-editor,pdf".split(","));
