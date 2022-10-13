@@ -15,7 +15,6 @@ import javafx.scene.paint.Color;
 import netscape.javascript.*;
 import peergos.server.*;
 import peergos.server.corenode.*;
-import peergos.server.crypto.hash.*;
 import peergos.server.login.*;
 import peergos.server.mutable.*;
 import peergos.server.sql.*;
@@ -26,7 +25,6 @@ import peergos.shared.*;
 import peergos.shared.corenode.*;
 import peergos.shared.crypto.hash.*;
 import peergos.shared.io.ipfs.cid.*;
-import peergos.shared.io.ipfs.multihash.*;
 import peergos.shared.mutable.*;
 import peergos.shared.storage.*;
 
@@ -77,7 +75,7 @@ public class Main extends Application {
 
     public static void startServer() {
         try {
-            Crypto crypto = Builder.initCrypto();
+            Crypto crypto = JavaCrypto.init();
             NetworkAccess net = buildNetwork("https://peergos.net", crypto.hasher);
 
             System.out.println("SQLITE library present: " + (null != peergos.server.Main.class.getResourceAsStream("/org/sqlite/native/Linux-Android/aarch64/libsqlitejdbc.so")));
