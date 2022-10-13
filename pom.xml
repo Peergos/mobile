@@ -118,20 +118,20 @@
                         <list>storage</list>
                     </attachList>
                     <resourcesList>
-                      <list>.*\\.bcmap$</list>
-                      <list>.*\\.css$</list>
-                      <list>.*\\.cur$</list>
-                      <list>.*\\.eot$</list>
-                      <list>.*\\.gif$</list>
-                      <list>.*\\.html$</list>
-                      <list>.*\\.ico$</list>
-                      <list>.*\\.map$</list>
-                      <list>.*\\.properties$</list>
-                      <list>.*\\.svg$</list>
-                      <list>.*\\.ttf$</list>
-                      <list>.*\\.woff$</list>
-                      <list>.*\\.woff2$</list>
-                      <list>.*\\.so$</list>
+                      <list>.*webroot.*\\.bcmap$</list>
+                      <list>.*webroot.*\\.css$</list>
+                      <list>.*webroot.*\\.cur$</list>
+                      <list>.*webroot.*\\.eot$</list>
+                      <list>.*webroot.*\\.gif$</list>
+                      <list>.*webroot.*\\.html$</list>
+                      <list>.*webroot.*\\.ico$</list>
+                      <list>.*webroot.*\\.map$</list>
+                      <list>.*webroot.*\\.properties$</list>
+                      <list>.*webroot.*\\.svg$</list>
+                      <list>.*webroot.*\\.ttf$</list>
+                      <list>.*webroot.*\\.woff$</list>
+                      <list>.*webroot.*\\.woff2$</list>
+                      <list>.*sqlite.*aarch64.*\\.so$</list>
                     </resourcesList>
                     <jniList>
                       <list>org.sqlite.core.DB</list>
