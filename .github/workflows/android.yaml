@@ -50,6 +50,7 @@ jobs:
       #    GLUON_ANDROID_KEYALIAS_PASSWORD: ${{ secrets.GLUON_ANDROID_KEYALIAS_PASSWORD }}
 
       - name: Cat log
+        if: always()
         run: cat /home/runner/work/mobile/mobile/target/gluonfx/log/process-package*.log
 
       # Create staging directory in which the apk will be copied
