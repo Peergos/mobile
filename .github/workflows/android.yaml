@@ -49,6 +49,9 @@ jobs:
       #    GLUON_ANDROID_KEYALIAS: ${{ secrets.GLUON_ANDROID_KEYALIAS }}
       #    GLUON_ANDROID_KEYALIAS_PASSWORD: ${{ secrets.GLUON_ANDROID_KEYALIAS_PASSWORD }}
 
+      - name: Cat log
+        run: cat /home/runner/work/mobile/mobile/target/gluonfx/log/process-package*.log
+
       # Create staging directory in which the apk will be copied
       - name: Make staging directory
         run: mkdir staging
