@@ -42,7 +42,7 @@ jobs:
       # The android profile is used, which means a native build will be created for the gluonfx target android.
       # This step also uses some env variables taken from the repo secrets. See the section 'Setup Android Keystore' below.
       - name: Gluon Build
-        run: mvn -e -Pandroid gluonfx:build gluonfx:package
+        run: mvn -e -X -Pandroid gluonfx:build gluonfx:package
       #  env:
       #    GLUON_ANDROID_KEYSTOREPATH: ${{ steps.android_keystore_file.outputs.filePath }}
       #    GLUON_ANDROID_KEYSTORE_PASSWORD: ${{ secrets.GLUON_ANDROID_KEYSTORE_PASSWORD }}
