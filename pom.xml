@@ -181,12 +181,12 @@
         <id>gluon-releases</id>
         <url>https://nexus.gluonhq.com/nexus/content/repositories/releases</url>
       </pluginRepository>
-        <pluginRepository>
-            <id>Snapshots</id>
-            <url>http://oss.sonatype.org/content/repositories/snapshots/</url>
-            <snapshots>
-              <enabled>true</enabled>
-            </snapshots>
-        </pluginRepository>
+      <pluginRepository>
+        <id>gluon-snapshots</id>
+        <url>https://nexus.gluonhq.com/nexus/content/repositories/snapshots</url>
+        <snapshots>
+          <enabled>true</enabled>
+        </snapshots>
+      </pluginRepository>
     </pluginRepositories>
-</project>
+ </project>
