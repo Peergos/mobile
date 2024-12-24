@@ -179,11 +179,11 @@
     <pluginRepositories>
       <pluginRepository>
         <id>gluon-releases</id>
-        <url>https://nexus.gluonhq.com/nexus/content/repositories/releases</url>
+        <url>https://nexus.gluonhq.com/nexus/content/repositories/releases/</url>
       </pluginRepository>
       <pluginRepository>
         <id>gluon-snapshots</id>
-        <url>https://nexus.gluonhq.com/nexus/content/repositories/snapshots</url>
+        <url>https://nexus.gluonhq.com/nexus/content/repositories/snapshots/</url>
         <snapshots>
           <enabled>true</enabled>
         </snapshots>
