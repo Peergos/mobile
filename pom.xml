@@ -183,7 +183,7 @@
       </pluginRepository>
       <pluginRepository>
         <id>gluon-snapshots</id>
-        <url>https://nexus.gluonhq.com/nexus/content/repositories/snapshots/</url>
+        <url>http://oss.sonatype.org/content/repositories/snapshots/</url>
         <snapshots>
           <enabled>true</enabled>
         </snapshots>
