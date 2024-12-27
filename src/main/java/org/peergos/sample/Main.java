@@ -24,9 +24,11 @@ import peergos.server.util.*;
 import peergos.shared.*;
 import peergos.shared.corenode.*;
 import peergos.shared.crypto.hash.*;
-import peergos.shared.io.ipfs.cid.*;
+import peergos.shared.io.ipfs.*;
+import peergos.shared.login.*;
 import peergos.shared.mutable.*;
 import peergos.shared.storage.*;
+import peergos.shared.storage.auth.*;
 
 import java.io.*;
 import java.net.*;
@@ -100,18 +102,19 @@ public class Main extends Application {
             });
             FileBlockCache blockCache = new FileBlockCache(peergosDir.resolve(Paths.get("blocks", "cache")),
                     10*1024*1024*1024L);
-            ContentAddressedStorage locallyCachedStorage = new UnauthedCachingStorage(net.dhtClient, blockCache);
+            ContentAddressedStorage locallyCachedStorage = new UnauthedCachingStorage(net.dhtClient, blockCache, crypto.hasher);
             DirectOnlyStorage withoutS3 = new DirectOnlyStorage(locallyCachedStorage);
 
             Supplier<Connection> dbConnector = Builder.getDBConnector(a, "mutable-pointers-cache");
             JdbcIpnsAndSocial rawPointers = Builder.buildRawPointers(a, dbConnector);
-            OfflinePointerCache pointerCache = new OfflinePointerCache(net.mutable, new JdbcPointerCache(rawPointers, locallyCachedStorage));
+            OnlineState online = new OnlineState(() -> Futures.of(true));
+            OfflinePointerCache pointerCache = new OfflinePointerCache(net.mutable, new JdbcPointerCache(rawPointers, locallyCachedStorage), online);
 
             SqlSupplier commands = Builder.getSqlCommands(a);
-            OfflineCorenode offlineCorenode = new OfflineCorenode(net.coreNode, new JdbcPkiCache(Builder.getDBConnector(a, "pki-cache-sql-file", dbConnector), commands));
+            OfflineCorenode offlineCorenode = new OfflineCorenode(net.coreNode, new JdbcPkiCache(Builder.getDBConnector(a, "pki-cache-sql-file", dbConnector), commands), online);
 
-            JdbcAccount localAccount = new JdbcAccount(Builder.getDBConnector(a, "account-cache-sql-file", dbConnector), commands);
-            OfflineAccountStore offlineAccounts = new OfflineAccountStore(net.account, localAccount);
+            JdbcAccount localAccount = new JdbcAccount(Builder.getDBConnector(a, "account-cache-sql-file", dbConnector), commands, "localhost");
+            OfflineAccountStore offlineAccounts = new OfflineAccountStore(net.account, localAccount, online);
 
             OfflineBatCache offlineBats = new OfflineBatCache(net.batCave, new JdbcBatCave(Builder.getDBConnector(a, "bat-cache-sql-file", dbConnector), commands));
 
