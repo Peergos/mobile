@@ -30,6 +30,7 @@ import peergos.shared.mutable.*;
 import peergos.shared.storage.*;
 import peergos.shared.storage.auth.*;
 import peergos.shared.util.*;
+import com.webauthn4j.data.client.*;
 
 import java.io.*;
 import java.net.*;
