@@ -17,8 +17,8 @@
         <javafx.version>23.0.1</javafx.version>
         <javafx.plugin.version>0.0.8</javafx.plugin.version>
         <gluonfx.plugin.version>1.0.25-SNAPSHOT</gluonfx.plugin.version>
-        <charm.version>6.1.1</charm.version>
-        <attach.version>4.0.15</attach.version>
+        <charm.version>6.2.3</charm.version>
+        <attach.version>4.0.21</attach.version>
         <main.class>org.peergos.sample.Main</main.class>
         <server.path>${basedir}/lib/Peergos.jar</server.path>
     </properties>
