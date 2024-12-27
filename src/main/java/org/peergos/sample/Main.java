@@ -29,6 +29,7 @@ import peergos.shared.login.*;
 import peergos.shared.mutable.*;
 import peergos.shared.storage.*;
 import peergos.shared.storage.auth.*;
+import peergos.shared.util.*;
 
 import java.io.*;
 import java.net.*;
@@ -70,8 +71,8 @@ public class Main extends Application {
             JavaPoster poster = new JavaPoster(target, true, Optional.empty());
             CoreNode directCore = NetworkAccess.buildDirectCorenode(poster);
             ContentAddressedStorage localDht = NetworkAccess.buildLocalDht(poster, true, h);
-            Cid peergosdotnet = Cid.decode("QmcoDbhCiVXGrWs6rwBvB59Gm44veo7Qxn2zmRnPw7BaCH");
-            return NetworkAccess.buildToPeergosServer(peergosdotnet, directCore, localDht, poster, poster, 7000, h, Collections.emptyList(), false);
+            Cid peergosdotnet = Cid.decodePeerId("12D3KooWFv6ZcoUKyaDBB7nR5SQg6HpmEbDXad48WyFSyEk7xrSR");
+            return NetworkAccess.buildToPeergosServer(Arrays.asList(peergosdotnet), directCore, localDht, poster, poster, 7000, h, Collections.emptyList(), false);
         }
     }
 
@@ -113,7 +114,8 @@ public class Main extends Application {
             SqlSupplier commands = Builder.getSqlCommands(a);
             OfflineCorenode offlineCorenode = new OfflineCorenode(net.coreNode, new JdbcPkiCache(Builder.getDBConnector(a, "pki-cache-sql-file", dbConnector), commands), online);
 
-            JdbcAccount localAccount = new JdbcAccount(Builder.getDBConnector(a, "account-cache-sql-file", dbConnector), commands, "localhost");
+            Origin origin = new Origin("http://localhost:8000");
+            JdbcAccount localAccount = new JdbcAccount(Builder.getDBConnector(a, "account-cache-sql-file", dbConnector), commands, origin, "localhost");
             OfflineAccountStore offlineAccounts = new OfflineAccountStore(net.account, localAccount, online);
 
             OfflineBatCache offlineBats = new OfflineBatCache(net.batCave, new JdbcBatCave(Builder.getDBConnector(a, "bat-cache-sql-file", dbConnector), commands));
@@ -126,7 +128,7 @@ public class Main extends Application {
             Cid nodeId = net.dhtClient.id().join();
             int connectionBacklog = 50;
             int handlerPoolSize = 4;
-            server.initAndStart(localAPIAddress, nodeId, Optional.empty(), Optional.empty(),
+            server.initAndStart(localAPIAddress, Arrays.asList(nodeId), Optional.empty(), Optional.empty(),
                     Collections.emptyList(), Collections.emptyList(), appSubdomains, true,
                     Optional.empty(), Optional.empty(), Optional.empty(), true, false,
                     connectionBacklog, handlerPoolSize);
