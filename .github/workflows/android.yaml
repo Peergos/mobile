@@ -43,7 +43,8 @@ jobs:
       # This step also uses some env variables taken from the repo secrets. See the section 'Setup Android Keystore' below.
       - name: Gluon Build
         run: mvn -e -X -Pandroid gluonfx:build gluonfx:package
-      #  env:
+        env:
+          ANDROID_SDK_ROOT: /home/runner/.gluon/substrate/Android
       #    GLUON_ANDROID_KEYSTOREPATH: ${{ steps.android_keystore_file.outputs.filePath }}
       #    GLUON_ANDROID_KEYSTORE_PASSWORD: ${{ secrets.GLUON_ANDROID_KEYSTORE_PASSWORD }}
       #    GLUON_ANDROID_KEYALIAS: ${{ secrets.GLUON_ANDROID_KEYALIAS }}
