@@ -125,7 +125,7 @@ public class Main extends Application {
                     net.social, pointerCache, net.instanceAdmin, net.spaceUsage, net.serverMessager, null);
 
             InetSocketAddress localAPIAddress = new InetSocketAddress("localhost", 8000);
-            List<String> appSubdomains = Arrays.asList("markdown-viewer,email,calendar,todo-board,code-editor,pdf".split(","));
+            List<String> appSubdomains = Arrays.asList("markup-viewer,email,calendar,todo-board,code-editor,pdf".split(","));
             Cid nodeId = net.dhtClient.id().join();
             int connectionBacklog = 50;
             int handlerPoolSize = 4;
