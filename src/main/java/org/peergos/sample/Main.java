@@ -46,11 +46,12 @@ public class Main extends Application {
 
     @Override
     public void start(Stage stage) {
-        startServer();
+        int port = 7777;
+        startServer(port);
 
         // create the scene
         stage.setTitle("Peergos");
-        view = new Browser("http://localhost:8000/");
+        view = new Browser("http://localhost:" + port);
         scene = new Scene(view, 900, 700, Color.web("#666970"));
         scene.addEventHandler(KeyEvent.KEY_RELEASED, e -> {
             if (KeyCode.ESCAPE.equals(e.getCode())) {
@@ -77,7 +78,7 @@ public class Main extends Application {
         }
     }
 
-    public static void startServer() {
+    public static void startServer(int port) {
         try {
             System.out.println("SQLITE library present: " + (null != peergos.server.Main.class.getResourceAsStream("/org/sqlite/native/Linux-Android/aarch64/libsqlitejdbc.so")));
             File privateStorage = StorageService.create()
@@ -97,7 +98,8 @@ public class Main extends Application {
                     "-mutable-pointers-cache", "pointer-cache.sql",
                     "-account-cache-sql-file", "account-cache.sql",
                     "-pki-cache-sql-file", "pki-cache.sql",
-                    "-bat-cache-sql-file", "bat-cache.sql"
+                    "-bat-cache-sql-file", "bat-cache.sql",
+                    "port", port + ""
             });
             peergos.server.Main.PROXY.main(a);
         } catch (IOException e) {
