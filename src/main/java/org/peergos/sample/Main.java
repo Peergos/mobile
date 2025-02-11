@@ -79,9 +79,6 @@ public class Main extends Application {
 
     public static void startServer() {
         try {
-            Crypto crypto = JavaCrypto.init();
-            NetworkAccess net = buildNetwork("https://peergos.net", crypto.hasher);
-
             System.out.println("SQLITE library present: " + (null != peergos.server.Main.class.getResourceAsStream("/org/sqlite/native/Linux-Android/aarch64/libsqlitejdbc.so")));
             File privateStorage = StorageService.create()
                     .flatMap(StorageService::getPrivateStorage)
@@ -102,38 +99,8 @@ public class Main extends Application {
                     "-pki-cache-sql-file", "pki-cache.sql",
                     "-bat-cache-sql-file", "bat-cache.sql"
             });
-            FileBlockCache blockCache = new FileBlockCache(peergosDir.resolve(Paths.get("blocks", "cache")),
-                    10*1024*1024*1024L);
-            ContentAddressedStorage locallyCachedStorage = new UnauthedCachingStorage(net.dhtClient, blockCache, crypto.hasher);
-            DirectOnlyStorage withoutS3 = new DirectOnlyStorage(locallyCachedStorage);
-
-            Supplier<Connection> dbConnector = Builder.getDBConnector(a, "mutable-pointers-cache");
-            JdbcIpnsAndSocial rawPointers = Builder.buildRawPointers(a, dbConnector);
-            OnlineState online = new OnlineState(() -> Futures.of(true));
-            OfflinePointerCache pointerCache = new OfflinePointerCache(net.mutable, new JdbcPointerCache(rawPointers, locallyCachedStorage), online);
-
-            SqlSupplier commands = Builder.getSqlCommands(a);
-            OfflineCorenode offlineCorenode = new OfflineCorenode(net.coreNode, new JdbcPkiCache(Builder.getDBConnector(a, "pki-cache-sql-file", dbConnector), commands), online);
-
-            Origin origin = new Origin("http://localhost:8000");
-            JdbcAccount localAccount = new JdbcAccount(Builder.getDBConnector(a, "account-cache-sql-file", dbConnector), commands, origin, "localhost");
-            OfflineAccountStore offlineAccounts = new OfflineAccountStore(net.account, localAccount, online);
-
-            OfflineBatCache offlineBats = new OfflineBatCache(net.batCave, new JdbcBatCave(Builder.getDBConnector(a, "bat-cache-sql-file", dbConnector), commands));
-
-            UserService server = new UserService(withoutS3, offlineBats, crypto, offlineCorenode, offlineAccounts,
-                    net.social, pointerCache, net.instanceAdmin, net.spaceUsage, net.serverMessager, null);
-
-            InetSocketAddress localAPIAddress = new InetSocketAddress("localhost", 8000);
-            List<String> appSubdomains = Arrays.asList("markup-viewer,email,calendar,todo-board,code-editor,pdf".split(","));
-            Cid nodeId = net.dhtClient.id().join();
-            int connectionBacklog = 50;
-            int handlerPoolSize = 4;
-            server.initAndStart(localAPIAddress, Arrays.asList(nodeId), Optional.empty(), Optional.empty(),
-                    Collections.emptyList(), Collections.emptyList(), appSubdomains, true,
-                    Optional.empty(), Optional.empty(), Optional.empty(), true, false,
-                    connectionBacklog, handlerPoolSize);
-        } catch (URISyntaxException | IOException e) {
+            peergos.server.Main.PROXY.main(a);
+        } catch (IOException e) {
             throw new IllegalStateException(e);
         }
     }
