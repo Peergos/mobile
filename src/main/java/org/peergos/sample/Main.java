@@ -13,31 +13,10 @@ import javafx.geometry.*;
 import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
 import netscape.javascript.*;
-import peergos.server.*;
-import peergos.server.corenode.*;
-import peergos.server.login.*;
-import peergos.server.mutable.*;
-import peergos.server.sql.*;
-import peergos.server.storage.*;
-import peergos.server.storage.auth.*;
 import peergos.server.util.*;
-import peergos.shared.*;
-import peergos.shared.corenode.*;
-import peergos.shared.crypto.hash.*;
-import peergos.shared.io.ipfs.*;
-import peergos.shared.login.*;
-import peergos.shared.mutable.*;
-import peergos.shared.storage.*;
-import peergos.shared.storage.auth.*;
-import peergos.shared.util.*;
-import com.webauthn4j.data.client.*;
 
 import java.io.*;
-import java.net.*;
 import java.nio.file.*;
-import java.sql.*;
-import java.util.*;
-import java.util.function.*;
 
 public class Main extends Application {
 
