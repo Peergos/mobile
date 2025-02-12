@@ -64,20 +64,6 @@ public class Main extends Application {
         stage.show();
     }
 
-    public static NetworkAccess buildNetwork(String url, Hasher h) throws URISyntaxException, MalformedURLException {
-        URL target = new URI(url).toURL();
-        try {
-            return Builder.buildJavaNetworkAccess(target, true).join();
-        } catch (Exception e) {
-            System.out.println("Using offline NetworkAccess");
-            JavaPoster poster = new JavaPoster(target, true, Optional.empty());
-            CoreNode directCore = NetworkAccess.buildDirectCorenode(poster);
-            ContentAddressedStorage localDht = NetworkAccess.buildLocalDht(poster, true, h);
-            Cid peergosdotnet = Cid.decodePeerId("12D3KooWFv6ZcoUKyaDBB7nR5SQg6HpmEbDXad48WyFSyEk7xrSR");
-            return NetworkAccess.buildToPeergosServer(Arrays.asList(peergosdotnet), directCore, localDht, poster, poster, 7000, h, Collections.emptyList(), false);
-        }
-    }
-
     public static void startServer(int port) {
         try {
             System.out.println("SQLITE library present: " + (null != peergos.server.Main.class.getResourceAsStream("/org/sqlite/native/Linux-Android/aarch64/libsqlitejdbc.so")));
